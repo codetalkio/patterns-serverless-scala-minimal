@@ -1,0 +1,39 @@
+{
+  "name": "sls-scala-minimal",
+  "description": "Deployment tools for the minimal Serverless Scala application.",
+  "version": "0.1.0",
+  "author": "Christian Kjaer <ckl@codetalk.io>",
+  "license": "MIT",
+  "keywords": [
+    "serverless",
+    "scala",
+    "aws",
+    "cdk"
+  ],
+  "scripts": {
+    "deploy": "npm run build && npm run cdk:deploy",
+    "build": "npm run build:clean && echo 'Not implemented...'",
+    "build:archive": "echo 'Not implemented...'",
+    "build:clean": "echo 'Not implemented...' || echo '[build:clean] No existing release found.'",
+    "cdk:synth": "cdk synth",
+    "cdk:diff": "cdk diff",
+    "cdk:deploy": "[[ $CI == 'true' ]] && CDK_APPROVAL='never' || CDK_APPROVAL='broadening'; cdk deploy --require-approval $CDK_APPROVAL $npm_package_name",
+    "cdk:bootstrap": "cdk bootstrap aws://$(aws sts get-caller-identity | jq -r .Account)/$AWS_REGION",
+    "cdklocal:start": "docker-compose up",
+    "cdklocal:clear-cache": "(rm ~/.cdk/cache/accounts.json || true) && (rm ~/.cdk/cache/accounts_partitions.json || true)",
+    "cdklocal:deploy": "npm run --silent cdklocal:clear-cache && AWS_REGION=eu-west-1 cdklocal deploy --require-approval never $npm_package_name",
+    "cdklocal:bootstrap": "npm run --silent cdklocal:clear-cache && AWS_REGION=eu-west-1 cdklocal bootstrap aws://000000000000/eu-west-1"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "aws-cdk": "1.64.1",
+    "aws-cdk-local": "1.64.1-dev1",
+    "@aws-cdk/core": "1.64.1",
+    "@aws-cdk/assert": "1.64.1",
+    "@aws-cdk/aws-lambda": "1.64.1",
+    "@types/node": "14.11.2",
+    "ts-node": "9.0.0",
+    "tsconfig-paths": "3.9.0",
+    "typescript": "4.0.3"
+  }
+}
