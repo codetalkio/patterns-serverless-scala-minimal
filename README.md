@@ -4,6 +4,7 @@ The following is an minimal template for deploying a Scala AWS Lambda function. 
 TODO:
 - [ ] Set up GraalVM [build flow](https://medium.com/graalvm/getting-started-with-graalvm-for-scala-d0a006dec1d1)
 - [ ] Set up [Scala bootstrap file](https://github.com/swartzrock/graalvm-scala-lambda)
+- [ ] [Streamline build](https://blog.softwaremill.com/small-fast-docker-images-using-graalvms-native-image-99c0bc92e70b)
 
 **✨ Features ✨**
 

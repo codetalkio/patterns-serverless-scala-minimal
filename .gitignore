@@ -12,3 +12,11 @@ cdk.out
 node_modules
 benchmark/trace-summaries.json
 benchmark/traces.json
+
+# Scala files
+dist
+project/*
+!project/assembly.sbt
+!project/build.properties
+.metals
+.bloop

@@ -12,9 +12,12 @@
   ],
   "scripts": {
     "deploy": "npm run build && npm run cdk:deploy",
-    "build": "npm run build:clean && echo 'Not implemented...'",
+    "build": "npm run build:clean && npm run build:scala && npm run build:docker-image && npm run build:native-image",
+    "build:scala": "sbt clean assembly",
+    "build:docker-image": "docker build -t sls-graalvm-build .",
+    "build:native-image": "docker run -v \"$(pwd -P)/target/scala-2.13\":/tmp/sls-graalvm-target -v \"$(pwd -P)/dist\":/tmp/sls-graalvm-dist sls-graalvm-build",
     "build:archive": "echo 'Not implemented...'",
-    "build:clean": "echo 'Not implemented...' || echo '[build:clean] No existing release found.'",
+    "build:clean": "rm target/scala-*/bootstrap.jar || echo '[build:clean] No existing release found.'",
     "cdk:synth": "cdk synth",
     "cdk:diff": "cdk diff",
     "cdk:deploy": "[[ $CI == 'true' ]] && CDK_APPROVAL='never' || CDK_APPROVAL='broadening'; cdk deploy --require-approval $CDK_APPROVAL $npm_package_name",
@@ -22,7 +25,8 @@
     "cdklocal:start": "docker-compose up",
     "cdklocal:clear-cache": "(rm ~/.cdk/cache/accounts.json || true) && (rm ~/.cdk/cache/accounts_partitions.json || true)",
     "cdklocal:deploy": "npm run --silent cdklocal:clear-cache && AWS_REGION=eu-west-1 cdklocal deploy --require-approval never $npm_package_name",
-    "cdklocal:bootstrap": "npm run --silent cdklocal:clear-cache && AWS_REGION=eu-west-1 cdklocal bootstrap aws://000000000000/eu-west-1"
+    "cdklocal:bootstrap": "npm run --silent cdklocal:clear-cache && AWS_REGION=eu-west-1 cdklocal bootstrap aws://000000000000/eu-west-1",
+    "ts-node": "ts-node"
   },
   "dependencies": {},
   "devDependencies": {
