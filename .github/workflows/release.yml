@@ -29,26 +29,10 @@ jobs:
           key: node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             node-
-
-      - name: Upgrade NPM to 6.14.8
-        run: |
-          npm i -g npm@6.14.8
-
-      - name: "Install dependencies"
-        run: |
-          npm ci
-
-      # FIXME: Replace with JVM/Scala cache
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}-release
-
-      - run: |
-          npm run build
+      - name: "Setup node dependencies"
+        uses: .github/actions/setup-node-deps
+      - name: "Build asset"
+        uses: .github/actions/build-asset
 
       - name: Deploy
         if: env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY

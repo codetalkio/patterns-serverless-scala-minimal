@@ -8,7 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # FIXME: Replace with JVM/Scala cache
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2020-08-28
+          override: true
+          components: clippy
       - uses: actions/cache@v2
         with:
           path: |
@@ -16,21 +20,28 @@ jobs:
             ~/.cargo/git
             target
           key: cargo-${{ hashFiles('**/Cargo.lock') }}
-      # FIXME: Scala equivalent?
       - run: cargo check --all
 
   fmt:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # FIXME: Scala equivalent?
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2020-08-28
+          override: true
+          components: rustfmt
       - run: cargo fmt --all -- --check
 
-  test:
+  clippy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # FIXME: Replace with JVM/Scala cache
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2020-08-28
+          override: true
+          components: clippy
       - uses: actions/cache@v2
         with:
           path: |
@@ -38,28 +49,46 @@ jobs:
             ~/.cargo/git
             target
           key: cargo-${{ hashFiles('**/Cargo.lock') }}
-      - run: sbt test
+      - run: cargo clippy --all-targets -- -D clippy::all
 
-  # Generate a static build artifact for usage in deployments.
-  assets:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-      # FIXME: Replace with JVM/Scala cache
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2020-08-28
+          override: true
+          components: clippy
       - uses: actions/cache@v2
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}-release
+          key: cargo-${{ hashFiles('**/Cargo.lock') }}
+      - run: cargo test
 
-      - run: |
-          npm run build
-
+  # Generate a static build artifact for usage in deployments.
+  assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2020-08-28
+          override: true
+          components: clippy
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: "Build asset"
+        uses: ./.github/actions/build-asset
       # NOTE: Artifacts are not available across workflows.
-      # FIXME: Replace standalone GraalVM executable.
       - uses: actions/upload-artifact@v2
         with:
           name: bootstrap
@@ -94,16 +123,9 @@ jobs:
           key: node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             node-
+      - name: "Setup node dependencies"
+        uses: ./.github/actions/setup-node-deps
 
-      - name: Upgrade NPM to 6.14.8
-        run: |
-          npm i -g npm@6.14.8
-
-      - name: "Install dependencies"
-        run: |
-          npm ci
-
-      # FIXME: Replace standalone GraalVM executable.
       - uses: actions/download-artifact@v2
         with:
           name: bootstrap
