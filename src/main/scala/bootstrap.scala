@@ -1,6 +1,7 @@
 object bootstrap {
   def main(args: Array[String]): Unit = {
     val runtimeApiHost = sys.env("AWS_LAMBDA_RUNTIME_API")
+    Console.err.println(s"Could not handle event: $runtimeApiHost")
     handleEvents(runtimeApiHost)
   }
 

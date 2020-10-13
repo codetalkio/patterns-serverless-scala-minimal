@@ -6,7 +6,10 @@ mainClass in assembly := Some("bootstrap")
 libraryDependencies ++= Seq(
   "com.lihaoyi" %% "requests" % "0.6.5",
   "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % "2.6.2",
-  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.6.2" % Provided // only required in compile-time
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.6.2" % Provided, // only required in compile-time
+  // Check out https://github.com/scala/bug/issues/11634 for why these are necessary.
+  "org.graalvm.nativeimage" % "svm" % "20.1.0" % "compile-internal",
+  "org.scalameta" %% "svm-subs" % "20.1.0" % "compile-internal"
 )
 
 scalacOptions ++= Seq(
