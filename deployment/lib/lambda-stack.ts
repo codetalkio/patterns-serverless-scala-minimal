@@ -17,7 +17,7 @@ export class LambdaStack extends core.Stack {
       description: "Scala serverless minimal microservice",
       runtime: lambda.Runtime.PROVIDED_AL2,
       handler: `bootstrap`,
-      code: lambda.Code.fromAsset(`${__dirname}/../../dist/release`),
+      code: lambda.Code.fromAsset(`${__dirname}/../../dist`),
       memorySize: 256,
       timeout: cdk.Duration.seconds(10),
       tracing: lambda.Tracing.ACTIVE,
@@ -29,23 +29,11 @@ export class LambdaStack extends core.Stack {
     // Tag our resource.
     core.Aspects.of(entry).add(new cdk.Tag("service-type", "API"));
     core.Aspects.of(entry).add(new cdk.Tag("billing", `lambda-${entryFnName}`));
-
     // CloudFormation exports.
     new cdk.CfnOutput(this, `${entryFnName}-arn`, {
       description: `AWS ARN for the ${entryFnName} lambda resource`,
       exportName: `${entryFnName}-function-arn`,
       value: entry.functionArn,
     });
-
-    // Optionally: Keep the lambda function warm by pinging `concurrencyNumber` of it every 5 minutes (this will obvisouly cost a tiny, tiny bit).
-    // const concurrencyNumber = 5;
-    // const warmer = new cdkEvents.Rule(this, "Warmer", {
-    //   schedule: cdkEvents.Schedule.expression("rate(5 minutes)"),
-    // });
-    // warmer.addTarget(
-    //   new cdkEventTargets.LambdaFunction(entry, {
-    //     event: cdkEvents.RuleTargetInput.fromObject({ warmer: true, concurrency: concurrencyNumber }),
-    //   })
-    // );
   }
 }
