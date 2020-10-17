@@ -16,8 +16,8 @@ export class LambdaStack extends core.Stack {
       functionName: entryFnName,
       description: "Scala serverless minimal microservice",
       runtime: lambda.Runtime.PROVIDED_AL2,
-      handler: `${id}`, // The handler value syntax is `{cargo-package-name}.{bin-name}`.
-      code: lambda.Code.fromAsset(`${__dirname}/../../target/cdk/release`),
+      handler: `bootstrap`,
+      code: lambda.Code.fromAsset(`${__dirname}/../../dist/release`),
       memorySize: 256,
       timeout: cdk.Duration.seconds(10),
       tracing: lambda.Tracing.ACTIVE,
