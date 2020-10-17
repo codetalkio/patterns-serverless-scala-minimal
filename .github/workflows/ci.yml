@@ -34,6 +34,11 @@ jobs:
             ~/.sbt
           key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
 
+
+      # Cache docker layers by pulling down the base image first, and then activating
+      # caching (keeps the cache small).
+      - run: docker pull
+      - uses: satackey/action-docker-layer-caching@v0.0.8
       - name: "Build asset"
         uses: ./.github/actions/build-asset
 
@@ -41,7 +46,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: bootstrap
-          path: ./target/cdk/release/bootstrap
+          path: ./dist/bootstrap
           if-no-files-found: error
 
   # Validate our deployment setup by deploying the stack to LocalStack.
@@ -78,7 +83,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: bootstrap
-          path: ./target/cdk/release
+          path: ./dist
 
       - name: Bootstrapping LocalStack
         run: |
