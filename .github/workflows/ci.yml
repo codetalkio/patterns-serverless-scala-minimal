@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: olafurpg/setup-scala@v10
         with:
-          java-version: graalvm@19.3.1-java11
+          java-version: graalvm@19.3.1
       - uses: actions/cache@v2
         with:
           path: |
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: olafurpg/setup-scala@v10
         with:
-          java-version: graalvm@19.3.1-java11
+          java-version: graalvm@19.3.1
       - uses: actions/cache@v2
         with:
           path: |
