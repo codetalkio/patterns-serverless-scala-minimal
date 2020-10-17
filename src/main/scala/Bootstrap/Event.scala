@@ -1,4 +1,4 @@
-object Bootstrap {
+object BootstrapEvent {
   def processEvent(runtimeApiHost: String): Unit = {
     val nextEventUrl = getNextEventUrl(runtimeApiHost)
     while (true) {
@@ -12,7 +12,7 @@ object Bootstrap {
         statusCode =
           requests
             .post(
-              Bootstrap.getResponseUrl(runtimeApiHost, requestId),
+              BootstrapEvent.getResponseUrl(runtimeApiHost, requestId),
               data = lambdaResponse.toJson
             )
             .statusCode
@@ -39,11 +39,13 @@ object Bootstrap {
   }
 
   // The url used to retrieve the next function request
-  def getNextEventUrl(host: String) =
+  def getNextEventUrl(host: String) = {
     s"http://$host/2018-06-01/runtime/invocation/next"
+  }
 
   // The url used to write a response back to the caller
-  def getResponseUrl(host: String, requestId: String) =
+  def getResponseUrl(host: String, requestId: String) = {
     s"http://$host/2018-06-01/runtime/invocation/$requestId/response"
+  }
 
 }

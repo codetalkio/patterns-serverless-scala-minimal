@@ -1,4 +1,4 @@
-import Bootstrap._;
+import BootstrapEvent._;
 
 object bootstrap {
 
@@ -9,7 +9,7 @@ object bootstrap {
     Console.err.println(
       s"Error in bootstrap: Could not handle event, running runtime API host '$awsLambdaRuntimeAPI'"
     )
-    Bootstrap.processEvent(awsLambdaRuntimeAPI)
+    BootstrapEvent.processEvent(awsLambdaRuntimeAPI)
   }
 
 }

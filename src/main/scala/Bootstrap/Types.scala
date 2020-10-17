@@ -43,10 +43,11 @@ case class RequestEvent(
 )
 
 object RequestEvent {
-  private implicit val codec: JsonValueCodec[RequestEvent] =
+  private implicit val codec: JsonValueCodec[RequestEvent] = {
     JsonCodecMaker.make[RequestEvent](CodecMakerConfig)
+  }
 
-  def fromJsonSafe(s: String): Option[RequestEvent] =
+  def fromJsonSafe(s: String): Option[RequestEvent] = {
     Try(readFromString[RequestEvent](s)) match {
       case util.Success(re) => Some(re)
       case util.Failure(ex) =>
@@ -54,6 +55,7 @@ object RequestEvent {
           s"Failed to parse body into RequestEvent: $ex \nbody: $s"
         ); None
     }
+  }
 }
 
 // The response written to the response url by the function.
@@ -63,8 +65,11 @@ case class LambdaResponse(
     body: String,
     isBase64Encoded: Boolean = false
 ) {
-  private implicit val codec: JsonValueCodec[LambdaResponse] =
+  private implicit val codec: JsonValueCodec[LambdaResponse] = {
     JsonCodecMaker.make[LambdaResponse](CodecMakerConfig)
+  }
 
-  def toJson: String = writeToString(this)
+  def toJson: String = {
+    writeToString(this)
+  }
 }
