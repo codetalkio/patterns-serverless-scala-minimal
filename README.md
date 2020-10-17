@@ -10,7 +10,6 @@ The following is an minimal template for deploying a Scala AWS Lambda function. 
 
 <img width="784" alt="Screenshot 2020-10-06 at 22 56 27" src="https://user-images.githubusercontent.com/1189998/95259406-6bc8ca80-0827-11eb-9132-0c6494921fe7.png">
 
-
 ### Overview
 
 - [Quick start](#️-quick-start)
