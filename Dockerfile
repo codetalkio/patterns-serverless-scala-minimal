@@ -1,5 +1,5 @@
 FROM oracle/graalvm-ce:19.3.1-java11
-# NOTE: Because of https://github.com/oracle/graal/issues/2770 we stick to 20.1.0.
+# NOTE: Because of https://github.com/scala/bug/issues/11634 we use 19.3.1-java11.
 
 RUN gu install native-image
 
