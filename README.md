@@ -150,7 +150,7 @@ $ aws lambda create-function \
   --handler doesnt.matter \
   --cli-binary-format raw-in-base64-out \
   --zip-file fileb://./lambda.zip \
-  --runtime provided \
+  --runtime provided.al2 \
   --role arn:aws:iam::$(aws sts get-caller-identity | jq -r .Account):role/sls-scala-test-execution \
   --tracing-config Mode=Active
 ```
@@ -206,7 +206,7 @@ $ aws --endpoint-url=http://localhost:4566 lambda create-function \
   --handler doesnt.matter \
   --cli-binary-format raw-in-base64-out \
   --code S3Bucket="__local__",S3Key="$(pwd)/BUILD_OUTPUT_DIR" \
-  --runtime provided \
+  --runtime provided.al2 \
   --role arn:aws:iam::000000000000:role/sls-scala-test-execution \
   --tracing-config Mode=Active
 ```
