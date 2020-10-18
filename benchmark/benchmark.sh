@@ -81,7 +81,7 @@ for cold in $(seq 1 $COLD_STARTS); do
       --function-name "sls-benchmark-$benchmarkSuffix" \
       --cli-binary-format raw-in-base64-out \
       --payload '{"firstName": "world"}' \
-      tmp-output.json > /dev/null && rm tmp-output.json
+      tmp-output.json > /dev/null && cat tmp-output.json && rm tmp-output.json
   done
 done
 
@@ -126,7 +126,7 @@ for t in $responseTimes; do
   if [[ $tracesProcessed == 4 ]]; then
     echo "[Benchmark] Fetching a batch of XRay traces."
     aws xray batch-get-traces --no-paginate --trace-ids $traceIds > ./benchmark/traces.json
-    npm run ts-node -- ./benchmark/post-process.ts >> ./benchmark/response-times.md
+    npm run --silent ts-node -- ./benchmark/post-process.ts >> ./benchmark/response-times.md
     traceIds=""
     tracesProcessed=0
   fi
@@ -134,7 +134,7 @@ done
 if [[ $tracesProcessed != 4 ]]; then
   echo "[Benchmark] Fetching a batch of XRay traces."
   aws xray batch-get-traces --no-paginate --trace-ids $traceIds > ./benchmark/traces.json
-  npm run ts-node -- ./benchmark/post-process.ts >> ./benchmark/response-times.md
+  npm run --silent ts-node -- ./benchmark/post-process.ts >> ./benchmark/response-times.md
 fi
 
 cat >> ./benchmark/response-times.md << 'EOF'

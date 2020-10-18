@@ -3,6 +3,22 @@ import scala.util.Try
 import com.github.plokhotnyuk.jsoniter_scala.core._
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 
+// The response written to the response url by the function.
+case class LambdaResponse(
+    statusCode: Int,
+    headers: Map[String, String],
+    body: String,
+    isBase64Encoded: Boolean = false
+) {
+  private implicit val codec: JsonValueCodec[LambdaResponse] = {
+    JsonCodecMaker.make[LambdaResponse](CodecMakerConfig)
+  }
+
+  def toJson: String = {
+    writeToString(this)
+  }
+}
+
 case class RequestIdentity(
     apiKey: Option[String],
     userArn: Option[String],
@@ -55,21 +71,5 @@ object RequestEvent {
           s"Failed to parse body into RequestEvent: $ex \nbody: $s"
         ); None
     }
-  }
-}
-
-// The response written to the response url by the function.
-case class LambdaResponse(
-    statusCode: Int,
-    headers: Map[String, String],
-    body: String,
-    isBase64Encoded: Boolean = false
-) {
-  private implicit val codec: JsonValueCodec[LambdaResponse] = {
-    JsonCodecMaker.make[LambdaResponse](CodecMakerConfig)
-  }
-
-  def toJson: String = {
-    writeToString(this)
   }
 }
