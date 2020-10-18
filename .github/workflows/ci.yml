@@ -4,95 +4,49 @@ name: ci
 on: push
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2020-08-28
-          override: true
-          components: clippy
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo check --all
-
-  fmt:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2020-08-28
-          override: true
-          components: rustfmt
-      - run: cargo fmt --all -- --check
-
-  clippy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2020-08-28
-          override: true
-          components: clippy
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo clippy --all-targets -- -D clippy::all
-
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: olafurpg/setup-scala@v10
         with:
-          toolchain: nightly-2020-08-28
-          override: true
-          components: clippy
+          java-version: graalvm@19.3.1
       - uses: actions/cache@v2
         with:
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo test
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+      - run: sbt test
 
   # Generate a static build artifact for usage in deployments.
   assets:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: olafurpg/setup-scala@v10
         with:
-          toolchain: nightly-2020-08-28
-          override: true
-          components: clippy
+          java-version: graalvm@19.3.1
       - uses: actions/cache@v2
         with:
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+
+
+      # Cache docker layers by pulling down the base image first, and then activating
+      # caching (keeps the cache small).
+      - run: docker pull oracle/graalvm-ce:19.3.1-java11
+      - uses: satackey/action-docker-layer-caching@v0.0.8
       - name: "Build asset"
         uses: ./.github/actions/build-asset
+
       # NOTE: Artifacts are not available across workflows.
       - uses: actions/upload-artifact@v2
         with:
           name: bootstrap
-          path: ./target/cdk/release/bootstrap
+          path: ./dist/bootstrap
           if-no-files-found: error
 
   # Validate our deployment setup by deploying the stack to LocalStack.
@@ -129,7 +83,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: bootstrap
-          path: ./target/cdk/release
+          path: ./dist
 
       - name: Bootstrapping LocalStack
         run: |

@@ -31,14 +31,28 @@ jobs:
             node-
       - name: "Setup node dependencies"
         uses: .github/actions/setup-node-deps
+
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: graalvm@19.3.1
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+      # Cache docker layers by pulling down the base image first, and then activating
+      # caching (keeps the cache small).
+      - run: docker pull oracle/graalvm-ce:19.3.1-java11
+      - uses: satackey/action-docker-layer-caching@v0.0.8
       - name: "Build asset"
         uses: .github/actions/build-asset
 
       - name: Deploy
         if: env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.RELEASE_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.RELEASE_AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.RELEASE_AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.PRE_RELEASE_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.PRE_RELEASE_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.PRE_RELEASE_AWS_REGION }}
         run: |
-          AWS_REGION=$AWS_DEFAULT_REGION npm run cdk:deploy
+          npm run cdk:deploy

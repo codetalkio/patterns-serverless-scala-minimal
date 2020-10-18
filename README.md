@@ -1,11 +1,6 @@
 # 🚧 Patterns: Serverless Scala (minimal) ![ci badge](https://github.com/codetalkio/patterns-serverless-scala-minimal/workflows/ci/badge.svg?branch=master) 🚧
 The following is an minimal template for deploying a Scala AWS Lambda function. All deployment is managed by the AWS CDK tool.
 
-TODO:
-- [ ] Set up GraalVM [build flow](https://medium.com/graalvm/getting-started-with-graalvm-for-scala-d0a006dec1d1)
-- [ ] Set up [Scala bootstrap file](https://github.com/swartzrock/graalvm-scala-lambda)
-- [ ] [Streamline build](https://blog.softwaremill.com/small-fast-docker-images-using-graalvms-native-image-99c0bc92e70b)
-
 **✨ Features ✨**
 
 - 🦀 Ready-to-use serverless setup using Scala, GraalVM, and [AWS CDK](https://github.com/aws/aws-cdk).
@@ -14,7 +9,6 @@ TODO:
 - 🚀 Deployments via [GitHub Releases](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/about-releases).
 
 <img width="784" alt="Screenshot 2020-10-06 at 22 56 27" src="https://user-images.githubusercontent.com/1189998/95259406-6bc8ca80-0827-11eb-9132-0c6494921fe7.png">
-
 
 ### Overview
 
