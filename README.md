@@ -1,4 +1,4 @@
-# 🚧 Patterns: Serverless Scala (minimal) ![ci badge](https://github.com/codetalkio/patterns-serverless-scala-minimal/workflows/ci/badge.svg?branch=master) 🚧
+# Patterns: Serverless Scala (minimal) ![ci badge](https://github.com/codetalkio/patterns-serverless-scala-minimal/workflows/ci/badge.svg?branch=master)
 The following is an minimal template for deploying a Scala AWS Lambda function. All deployment is managed by the AWS CDK tool.
 
 **✨ Features ✨**
