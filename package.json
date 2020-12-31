@@ -32,14 +32,14 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "aws-cdk": "1.64.1",
-    "aws-cdk-local": "1.64.1-dev1",
-    "@aws-cdk/core": "1.64.1",
-    "@aws-cdk/assert": "1.64.1",
-    "@aws-cdk/aws-lambda": "1.64.1",
+    "aws-cdk": "1.81.0",
+    "aws-cdk-local": "1.65.2",
+    "@aws-cdk/core": "1.81.0",
+    "@aws-cdk/assert": "1.81.0",
+    "@aws-cdk/aws-lambda": "1.81.0",
     "@types/node": "14.11.2",
-    "ts-node": "9.0.0",
+    "ts-node": "9.1.1",
     "tsconfig-paths": "3.9.0",
-    "typescript": "4.0.3"
+    "typescript": "4.1.3"
   }
 }
