@@ -24,7 +24,7 @@ jobs:
 
       # Cache docker layers by pulling down the base image first, and then activating
       # caching (keeps the cache small).
-      - run: docker pull oracle/graalvm-ce:19.3.1-java11
+      - run: docker pull oracle/graalvm-ce:20.3.0-java11
       - uses: satackey/action-docker-layer-caching@v0.0.8
       - name: "Build asset"
         uses: ./.github/actions/build-asset
