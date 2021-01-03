@@ -4,38 +4,41 @@ The following is an minimal template for deploying a Scala AWS Lambda function. 
 **✨ Features ✨**
 
 - 🦀 Ready-to-use serverless setup using Scala, GraalVM, and [AWS CDK](https://github.com/aws/aws-cdk).
-- 🚗 CI using [GitHub Actions](https://github.com/features/actions).
-- 👩‍💻 Testing of deployment in CI using [LocalStack](https://github.com/localstack/localstack). (🚧 Work in progresss 🚧)
+- 🚗 CI using [GitHub Actions](https://github.com/features/actions) testing the deployment using [LocalStack](https://github.com/localstack/localstack).
+- 👩‍💻 Local development using [LocalStack](https://github.com/localstack/localstack).
 - 🚀 Deployments via [GitHub Releases](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/about-releases).
+
+**⚡️ Quick start ⚡️**
+
+Assuming you have set up npm and cargo/rustup, the following will get you going:
+
+- `npm ci`: install all our deployment dependencies.
+- `npm run build`: build the Scala standalone executable, using GraalVM, and package it as an asset for CDK.
+- `npm run cdk:deploy`: deploy the packaged asset.
+
+The stack name is controlled by the `name` field in `package.json`. Other than that, just use your regular Rust development setup.
 
 <img width="784" alt="Screenshot 2020-10-06 at 22 56 27" src="https://user-images.githubusercontent.com/1189998/95259406-6bc8ca80-0827-11eb-9132-0c6494921fe7.png">
 
+Use this repo as a template to get quickly started!
+
 ### Overview
 
-- [Quick start](#️-quick-start)
 - [Building](#-building)
 - [Deployment using CDK](#-deployment-using-cdk)
-- [Deployment using AWS CLI](#-deployment-using-aws-cli)
 - [Development using LocalStack](#-development-using-localstack)
 - [GitHub Actions (CI/CD)](#--github-actions-cicd)
 - [Benchmarks using AWS XRay](#️️-benchmarks-using-aws-xray)
 - [Libraries](#-libraries)
 - [Contributing](#️-contributing)
 
-## ⚡️ Quick start
-
-- `npm ci`: install all our deployment dependencies.
-- `npm run build`: build the Scala standalone executable, using GraalVM, and package it as an asset for CDK.
-- `npm run cdk:deploy`: deploy the packaged asset.
-- The stack name is controlled by the `name` field in `package.json`.
-
-Other than that, just use your regular Scala development setup, and the commands below (all prefixed with `npm run`):
+An overview of commands (all prefixed with `npm run`):
 
 | Command | Description | Purpose |
 |---------|-------------|---------|
 | `build` | Build the Scala standalone executable, using GraalVM, for release | 📦 |
 | `build:archive` | Creates a `./lambda.zip` for deployment using the AWS CLI | 📦 |
-| `build:clean` | Cleans build artifcats from `BUILD_OUTPUT_DIR` | 📦 |
+| `build:clean` | Cleans build artifcats from `dist` | 📦 |
 | `deploy` | Cleans and builds a new executable, and deploys it via CDK | 📦 + 🚢 |
 | `cdk:bootstrap` | Bootstrap necessary resources on first usage of CDK in a region | 🚢 |
 | `cdk:deploy` | deploy this stack to your default AWS account/region | 🚢 |
@@ -58,7 +61,7 @@ We build and deploy by running `npm run deploy`, or just `npm run cdk:deploy` if
 A couple of notes:
 
 - If this is the first CDK deployment ever on your AWS account/region, run `npm run cdk:bootstrap` first. This creates the necessary CDK stack resources on the cloud.
-- The CDK deployment bundles the `BUILD_OUTPUT_DIR` folder as its assets. This is where the `bootstrap` file needs to be located (handled by `npm run build`).
+- The CDK deployment bundles the `dist` folder as its assets. This is where the `bootstrap` file needs to be located (handled by `npm run build`).
 
 
 **Generate our build assets**
@@ -108,7 +111,9 @@ $ npm run cdk:diff
 ```
 
 
-## 🚢 Deployment using AWS CLI
+<details>
+<summary> 👈 Expand here for deployment using AWS CLI</summary>
+
 For real-usage we will deploy using AWS CDK, but you can dip your feet by deploying the Scala function via the AWS CLI.
 
 We'll do a couple of steps additional steps for the first time setup. Only step 5. is necessary after having done this once:
@@ -186,43 +191,39 @@ $ aws iam detach-role-policy --role-name sls-scala-test-execution --policy-arn a
 $ aws iam delete-role --role-name sls-scala-test-execution
 ```
 
-## 👩‍💻 Development using LocalStack
+</details>
 
-🚧 Work in progresss 🚧
+## 👩‍💻 Development using LocalStack
 
 LocalStack allows us to deploy our CDK services directly to our local environment:
 
-- `npm run cdklocal:start` to start the LocalStack services.
-- `npm run cdklocal:boostrap` to create the necessary CDK stack resources on the cloud.
-- `npm run cdklocal:deploy` to deploy our stack.
+1. `npm run cdklocal:start` to start the LocalStack services.
+2. `npm run cdklocal:boostrap` to create the necessary CDK stack resources on the cloud.
+3. `npm run cdklocal:deploy` to deploy our stack.
+4. Target the local services from our application, with `cdklocal`, or by setting the `endpoint` option on the AWS CLI, e.g. `aws --endpoint-url=http://localhost:4566`.
 
-We can now target the local services with `cdklocal` or by setting the `endpoint` option on the AWS CLI, e.g. `aws --endpoint-url=http://localhost:4566`.
-
-Currently it seems `npm run cdklocal:deploy` doesn't create the actual Lambda, so a way to set it up at the moment is,
+🚧 Adapt the Rust setup below to Scala 🚧
 
 ```bash
-$ aws --endpoint-url=http://localhost:4566 lambda create-function \
-  --function-name sls-scala-minimal \
-  --handler doesnt.matter \
-  --cli-binary-format raw-in-base64-out \
-  --code S3Bucket="__local__",S3Key="$(pwd)/BUILD_OUTPUT_DIR" \
-  --runtime provided.al2 \
-  --role arn:aws:iam::000000000000:role/sls-scala-test-execution \
-  --tracing-config Mode=Active
+$ cargo watch -s 'npm run build:debug'
 ```
 
-This mounts the `BUILD_OUTPUT_DIR` directory. Whenever we update the `bootstrap` executable in here, it will be reflected in the Lambda function.
-
-We can then invoke it from our applications or via,
+If you want to test the application through the AWS CLI, the following should do the trick,
 
 ```bash
 $ aws --endpoint-url=http://localhost:4566 lambda invoke \
-  --function-name sls-scala-minimal \
+  --function-name sls-scala-minimal-main \
   --cli-binary-format raw-in-base64-out \
   --payload '{"firstName": "world"}' \
   tmp-output.json > /dev/null && cat tmp-output.json && rm tmp-output.json
 {"message":"Hello, world!"}
 ```
+
+#### How does this work?
+
+LocalStack supports [using local code for lambdas](https://github.com/localstack/localstack#using-local-code-with-lambda), which is what we take advantage of here. This works because step 3. mounts the `./target/cdk/release` directory. Whenever we update the `bootstrap` executable in here (still targeting `x86_64-unknown-linux-musl`) , it will be reflected in the Lambda function.
+
+You can see this in the `./deployment/lib/lambda-stack.ts` file where we conditionally switch out how we bundle the Lambda code based on the presence of a `CDK_LOCAL` environment variable.
 
 ## 🚗 🚀 GitHub Actions (CI/CD)
 Using [GitHub actions](/actions) allows us to have an efficient CI/CD setup with minimal work.
@@ -230,6 +231,7 @@ Using [GitHub actions](/actions) allows us to have an efficient CI/CD setup with
 | Workflow | Trigger | Purpose | Environment Variables |
 |----------|---------|---------|-----------------------|
 | **ci** | push | Continously test the build along with linting, formatting, best-practices (clippy), and validate deployment against LocalStack | |
+| **pre-release** | Pre-release using GitHub Releases | Run benchmark suite | **BENCHMARK_AWS_ACCESS_KEY_ID** <br /> **BENCHMARK_AWS_SECRET_ACCESS_KEY** <br /> **BENCHMARK_AWS_SECRET_ACCESS_KEY** |
 | **pre-release** | Pre-release using GitHub Releases | Deploy to a QA or staging environment |  **PRE_RELEASE_AWS_ACCESS_KEY_ID** <br /> **PRE_RELEASE_AWS_SECRET_ACCESS_KEY** <br /> **PRE_RELEASE_AWS_SECRET_ACCESS_KEY** |
 | **release** | Release using GitHub Releases | Deploy to production environment | **RELEASE_AWS_ACCESS_KEY_ID** <br /> **RELEASE_AWS_SECRET_ACCESS_KEY** <br /> **RELEASE_AWS_SECRET_ACCESS_KEY** |
 
@@ -245,7 +247,22 @@ You can checkout each trace in the AWS Console inside the XRay service, which is
 
 We can benchmark our performance using `npm run benchmark`, which will deploy the AWS Lambda to your AWS account, invoke it a bunch of times and trigger cold starts, along with gathering up all the AWS XRay traces into a neat table.
 
-Check out [the response-times table](./benchmark/response-times.md) for a the output of `npm run benchmark`.
+Below are two charts generated by the benchmark, you can see the raw data in [the response-times table](./benchmark/response-times.md).
+
+
+![Average Cold/Warm Response Times](./benchmark/response-times-average.svg)
+
+- 🔵: Average cold startup times
+- 🔴: Average warm startup times
+
+![Fastest and Slowest Response Times](./benchmark/response-times-extremes.svg)
+
+- 🔵: Fastest warm response time
+- 🔴: Slowest warm response time
+- 🟡: Fastest cold response time
+- 🟠: Slowest cold response time
+
+Benchmarks can be triggered in the CI by setting up its environment variables and creating a pre-release via GitHub Releases.
 
 ## 📚 Libraries
 We are using a couple of libraries, in various state of maturity/release:

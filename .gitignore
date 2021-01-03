@@ -10,8 +10,8 @@ lambda.zip
 cdk.out
 
 node_modules
-benchmark/trace-summaries.json
 benchmark/traces.json
+
 
 # Scala files
 dist
