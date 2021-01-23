@@ -1,9 +1,10 @@
-FROM oracle/graalvm-ce:20.3.0-java11
+FROM ghcr.io/graalvm/graalvm-ce:java11-21.0.0
 # NOTE: Because of https://github.com/scala/bug/issues/11634 we use 20.3.0-java11.
 
 RUN gu install native-image
 
 ENV AWS_LAMBDA_RUNTIME_API="0.0.0"
+ENV _HANDLER="handle"
 
 WORKDIR /tmp/sls-graalvm-dist
 CMD native-image \
